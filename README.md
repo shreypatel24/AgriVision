@@ -1,131 +1,30 @@
-# 🌱 AgriVision-Gemma
+# 🌾 AgriVision-Gemma3n: The Gemma 3n Impact Challenge
 
-**Vision-Language Fine-Tuning for Crop Disease Diagnosis**\
-This project focuses on fine-tuning the `Gemma-3n-e2b-it` vision-language model using QLoRA (via Unsloth) to create a specialized multimodal assistant for identifying crop diseases from leaf images and conversation context.
+**An offline-first, AI-powered field agronomist to help farmers diagnose crop diseases using their mobile phones.**
 
----
+This project is a submission for the **Google - The Gemma 3n Impact Challenge**. It leverages Gemma 3n, fine-tuned with Unsloth, to provide a tangible solution for farmers in low-connectivity areas, promoting environmental sustainability and economic empowerment.
 
-## 🔖 Table of Contents
+## The Problem
 
-1. [🧰 Setup & Installation](#setup--installation)
-2. [📦 Importing Libraries](#importing-libraries)
-3. [⚙️ Configuration](#configuration)
-4. [🗂️ Data Preparation](#data-preparation)
-5. [🤖 Model + QLoRA Configuration](#model--qlora-configuration)
-6. [🚀 Training](#training)
-7. [💾 Saving Model](#saving-model)
-8. [🧪 Inference](#inference)
-9. [🛠️ Tech Stack](#tech-stack)
-10. [📘️ Usage](#usage)
-11. [🙏 Contributing](#contributing)
-12. [📄 License](#license)
+Farmers worldwide lose a significant portion of their crops to pests and diseases. In remote areas without reliable internet access, getting timely and accurate diagnoses is nearly impossible, leading to crop loss and financial hardship.
 
----
+## Our Solution: AgriVision-Gemma3n
 
-## 🧰 Setup & Installation
+AgriVision-Gemma3n is a multimodal AI assistant that runs entirely on-device. A farmer can simply take a photo of a diseased plant, and the model will:
+1.  Identify the crop.
+2.  Diagnose the disease.
+3.  Provide clear, actionable treatment advice.
 
-```bash
-pip install --upgrade unsloth
-pip install torch torchvision torchaudio xformers --index-url https://download.pytorch.org/whl/cu124
-pip install transformers==4.53.0 datasets timm huggingface_hub
-```
+This is all done privately and without needing an internet connection, directly addressing the core capabilities of Gemma 3n.
 
----
+## How to Run the Demo
 
-## 📦 Importing Libraries
+The primary demo can be found in the `3_interactive_demo.ipynb` notebook. You can run it directly on Kaggle or a capable local machine.
 
-```python
-from unsloth import FastModel
-from datasets import Dataset
-from transformers import TrainingArguments, AutoProcessor
-from huggingface_hub import login, HfApi
-from PIL import Image
-import torch, os, json, re
-```
+## Fine-Tuning Process
 
----
+Our model was created using a novel two-stage fine-tuning process documented in these notebooks:
+1.  **`1_cddm_finetuning.ipynb`**: Built the foundational knowledge base by fine-tuning on the CDDM dataset.
+2.  **`2_agrillava_finetuning.ipynb`**: Enhanced the model's conversational abilities by continuing the fine-tuning on the Agri-LLaVA dataset.
 
-## ⚙️ Configuration
-
-```python
-model_id       = "unsloth/gemma-3n-e2b-it-unsloth-bnb-4bit"
-output_dir     = "outputs/gemma-qlora"
-hub_model_id   = "your-username/gemma3n-cddm-finetune"
-hf_token       = "YOUR_HF_TOKEN"
-hub_private    = False
-login(hf_token)
-```
-
----
-
-## 🗂️ Data Preparation
-
-Custom preprocessing pipeline transforms conversational JSON data from CDDM dataset into multi-turn, vision-language compatible format, with image paths correctly resolved for training.
-
----
-
-## 🤖 Model + QLoRA Configuration
-
-Using Unsloth's FastModel to efficiently load and prepare the vision-language model with 4-bit quantization:
-
-```python
-model, processor = FastModel.from_pretrained(model_id, load_in_4bit=True, dtype=torch.float16, max_seq_length=2048)
-model = FastModel.get_peft_model(model, target_modules="all-linear", r=16, lora_alpha=32)
-```
-
----
-
-## 🚀 Training
-
-The model is being fine-tuned using HuggingFace Trainer with Unsloth’s optimizations:
-
-```python
-args = TrainingArguments(
-  output_dir=output_dir,
-  num_train_epochs=1,
-  per_device_train_batch_size=1,
-  gradient_accumulation_steps=8,
-  max_steps=8750,
-  optim="adamw_8bit",
-  logging_steps=25,
-  save_steps=250,
-  push_to_hub=True,
-  hub_model_id=hub_model_id,
-  hub_token=hf_token
-)
-trainer = Trainer(model=model, args=args, train_dataset=train_dataset, data_collator=collate_fn)
-trainer.train(resume_from_checkpoint=True)
-```
-
----
-
-## 💾 Saving Model
-
-Intermediate and final checkpoints will be saved locally and optionally pushed to the Hugging Face Hub.
-
----
-
-## 🧪 Inference
-
-Sample inference code is included using the trained model and preprocessed vision-text prompts.
-
----
-
-## 🛠️ Tech Stack
-
-**Frameworks:** PyTorch, HuggingFace Transformers, Unsloth\
-**Libraries:** datasets, PIL, timm, numpy, huggingface\_hub, re
-
----
-
-## 📘️ Usage
-
-- Run the notebook step-by-step to reproduce the fine-tuning pipeline.
-- Pre-trained model and inference notebook will be updated once training completes.
-
----
-
-## 🙏 Contributing
-
-Feel free to fork and contribute! Fine-tuning is ongoing and improvements, suggestions, and bugfixes are welcome.
-
+This project proudly uses **Unsloth** for fast, memory-efficient fine-tuning, making it eligible for the Unsloth Special Technology Prize.
