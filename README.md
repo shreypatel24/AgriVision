@@ -8,7 +8,7 @@ This project is a submission for the **Google - The Gemma 3n Impact Challenge**.
 
 Farmers worldwide lose a significant portion of their crops to pests and diseases. In remote areas without reliable internet access, getting timely and accurate diagnoses is nearly impossible, leading to crop loss and financial hardship.
 
-## Our Solution: AgriVision-Gemma3n
+## Solution: AgriVision-Gemma3n
 
 AgriVision-Gemma3n is a multimodal AI assistant that runs entirely on-device. A farmer can simply take a photo of a diseased plant, and the model will:
 1.  Identify the crop.
